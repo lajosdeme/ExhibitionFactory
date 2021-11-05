@@ -107,8 +107,8 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         require(!isOptionWithdraw(msg.sender), "withdraw: please try optionWithdraw().");
         require(msg.sender == IExhibition(exhibition).controller(), "withdraw: not the exhibition controller.");
         require(block.timestamp > exhibitionEnd + graceTime, "withdraw: you are withdrawing too early.");
-        
-        uint256 balance = ( ( exhibitionEnd - exhibitionStart ) * untRateExhibitionController ) - paidToController;
+
+        uint256 balance = ( ( exhibitionEnd - allocationEnd ) * untRateExhibitionController ) - paidToController;
         uint256 _earned = ( ( ( ( block.timestamp - exhibitionEnd ) * 10**18 ) / controllerVestingDuration ) * balance ) / 10**18;
         
         if(_earned > balance){
@@ -138,8 +138,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         require(_amountUnt > 0, "optionWithdraw: amount of unt must be larger than 0.");
 
         if(msg.sender == IExhibition(exhibition).controller()){
-            
-            uint256 _earned = ( ( exhibitionEnd - exhibitionStart ) * untRateExhibitionController ) - paidToController;
+            uint256 _earned = ( ( exhibitionEnd - allocationEnd ) * untRateExhibitionController ) - paidToController;
             require(_earned >= _amountUnt, "optionWithdraw: requested more unt than available.");
             paidToController += _amountUnt;
             
@@ -191,6 +190,10 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         if(_account == IExhibition(exhibition).controller()){
             
             uint256 endTime = block.timestamp;
+
+            if (endTime < allocationEnd ) {
+                return 0;
+            }
             
             if(endTime > exhibitionEnd){
                 
@@ -222,6 +225,10 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         if(_account == IExhibition(exhibition).controller()){
             
             uint256 endTime = block.timestamp;
+
+            if (endTime < allocationEnd ) {
+                return 0;
+            }
             
             if(endTime > exhibitionEnd){
                 
@@ -252,7 +259,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
 
     function accumulatedUnt() public view returns(uint256){
 
-        if(lastCollectionUpdate == 0 || lastCollectionUpdate >= exhibitionEnd){
+        if(lastCollectionUpdate == 0 || lastCollectionUpdate >= exhibitionEnd || block.timestamp < allocationEnd ){
 
             return 0;
         }
@@ -586,11 +593,10 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         withdrawOnPause = _withdrawOnPause;
     }
 
-    function setUntRateAndPriceProviders(uint256 _untRate, uint256[] calldata _priceProviders) external lock{
+    function setPriceProviders(uint256[] calldata _priceProviders) external lock{
 
         require(owner == msg.sender, "setUntRateAndPriceProviders: not the owner.");
 
-        untRate = _untRate;
         priceProviders = _priceProviders;
     }
 
@@ -648,8 +654,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         uint256 grantLeft = gov.earnedUnt(this);
         
         if(!isOptionWithdraw(IExhibition(exhibition).controller())){
-        
-            grantLeft -= ( ( exhibitionEnd - exhibitionStart ) * untRateExhibitionController ) - paidToController;
+            grantLeft -= ( ( exhibitionEnd - allocationEnd ) * untRateExhibitionController ) - paidToController;
         }
         
         gov.mintUnt(grantLeft);
