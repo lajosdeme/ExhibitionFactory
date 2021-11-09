@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Not specified
 pragma solidity ^0.8.7;
 
 interface IUntPriceOracle{

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Not specified
 pragma solidity ^0.8.4;
 
-import "./Tools.sol";
+import "./Initializable.sol";
 
 abstract contract Lockable is Initializable {
     /* ################################

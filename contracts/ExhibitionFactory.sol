@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Not specified
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "./ExhibitionConsumer.sol";
 import "./exhibition.sol";
-import "./Tools.sol";
+import "./utils/WhitelistAdminRole.sol";
 
 contract ExhibitionFactory is WhitelistAdminRole {
     ExhibitionConsumer[] public consumers;

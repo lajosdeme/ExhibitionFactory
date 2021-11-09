@@ -1,5 +1,4 @@
-
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Not specified
 pragma solidity ^0.8.7;
 
 /**
@@ -168,7 +167,7 @@ interface IUniftyGovernanceConsumer{
      * 
      *  If this isn't used, it is recommended to send back accidentally paid ether (similar to fallback payable functions)
      * */
-    function optionWithdraw(uint256 _amountUnt) external returns(uint256);
+    function optionWithdraw(uint256 _amountUnt) external payable returns(uint256);
 
     /**
      * Should return if the given account is supposed to use optionWithdraw() or not.

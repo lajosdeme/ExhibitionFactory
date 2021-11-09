@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: Not specified
 pragma solidity ^0.8.7;
 
-import "./Tools.sol";
+import "./utils/Ownable.sol";
+import "./utils/WhitelistAdminRole.sol";
 
 contract UntPriceOracle is Ownable, WhitelistAdminRole{
     

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Not specified
 pragma solidity ^0.8.7;
 
 import "./interfaces/IUniftyGovernanceConsumer.sol";
@@ -6,8 +6,8 @@ import "./interfaces/IUniftyGovernance.sol";
 import "./interfaces/IUntPriceOracle.sol";
 import "./interfaces/IExhibition.sol";
 import "./interfaces/IERC20Simple.sol";
-import "./Tools.sol";
-import "./Lockable.sol";
+import "./utils/Initializable.sol";
+import "./utils/Lockable.sol";
 
 contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockable {
 
@@ -128,17 +128,23 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
     * get discounted UNT based on the price set in the unt price oracle.
     *
     * */
-    function optionWithdraw(uint256 _amountUnt) override external lock returns(uint256){
+    function optionWithdraw(uint256 _amountUnt) override external payable lock returns(uint256){
         
         require(!pausing || ( pausing && withdrawOnPause ), "optionWithdraw: pausing, sorry.");
         require(exhibition != address(0), "optionWithdraw: exhibition not set, access denied.");
         require(isOptionWithdraw(msg.sender), "optionWithdraw: not allowed to perform an option withdraw.");
-        require(block.timestamp > exhibitionEnd + graceTime, "optionWithdraw: you are withdrawing too early.");
         require(block.timestamp < exhibitionEnd + optionExerciseDuration, "optionWithdraw: option exercise window closed.");
         require(_amountUnt > 0, "optionWithdraw: amount of unt must be larger than 0.");
 
         if(msg.sender == IExhibition(exhibition).controller()){
-            uint256 _earned = ( ( exhibitionEnd - allocationEnd ) * untRateExhibitionController ) - paidToController;
+            uint256 endTime = block.timestamp;
+
+            if(endTime > exhibitionEnd){
+
+                endTime = exhibitionEnd;
+            }
+
+            uint256 _earned = ( ( endTime - allocationEnd ) * untRateExhibitionController ) - paidToController;
             require(_earned >= _amountUnt, "optionWithdraw: requested more unt than available.");
             paidToController += _amountUnt;
             
@@ -155,9 +161,12 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
     
         uint256 paid = payout(msg.sender, _amountUnt);
 
-        (uint256 nifPrice,,,) = priceOracle.getUntPrices();
+        (,uint256 ethPrice,,) = priceOracle.getUntPrices();
+        uint256 price = (_amountUnt * ethPrice * 10**8) / 10**18;
         
-        IERC20Simple(nifAddress).transferFrom(msg.sender, IExhibition(exhibition).uniftyFeeAddress(), ( _amountUnt * nifPrice * 10**18 ) / 10**28);
+        require(msg.value >= price, "optionWithdraw: insufficient eth sent.");
+        
+        payable(IExhibition(exhibition).uniftyFeeAddress()).transfer(price);
 
         return paid;
     }
@@ -200,7 +209,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
                 endTime = exhibitionEnd;
             }
             
-            return ( ( endTime - exhibitionStart ) * untRateExhibitionController ) - paidToController;
+            return ( ( endTime - allocationEnd ) * untRateExhibitionController ) - paidToController;
         }
 
         (IUniftyGovernanceConsumer con,address peer,,,) = gov.accountInfo(_account);
@@ -235,7 +244,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
                 endTime = exhibitionEnd;
             }
             
-            return ( ( endTime - exhibitionStart ) * untRateExhibitionController ) - paidToController;
+            return ( ( endTime - allocationEnd ) * untRateExhibitionController ) - paidToController;
         }
 
         (IUniftyGovernanceConsumer con,address peer,,,) = gov.accountInfo(_account);
@@ -592,6 +601,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         pausing = _pausing;
         withdrawOnPause = _withdrawOnPause;
     }
+
 
     function setPriceProviders(uint256[] calldata _priceProviders) external lock{
 
