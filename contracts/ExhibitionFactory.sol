@@ -87,7 +87,7 @@ contract ExhibitionFactory is WhitelistAdminRole {
         _exhibition.initialize(_isArtistExhibition, _unifty, _controller, _uniftyFee, _exhibitionUri, _version);
 
         emit ExhibitionCloneCreated(address(_exhibition));
-        
+        _exhibition.addWhitelistAdmin(_unifty);
         _exhibition.addWhitelistAdmin(_controller);
 
         exhibitions.push(_exhibition);
