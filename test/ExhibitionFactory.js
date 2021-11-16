@@ -50,7 +50,7 @@ contract("ExhibitionFactory", (accounts) => {
     */
     it("Should deploy two new exhibition consumers", async function() {
         //Deploying first consumer
-        const receipt = await exhibitionFactory.createExhibitionConsumer("Test 1", "test 1 desc", "", 1, "1000000000000000000", "1000000000000000000", [0]);
+        const receipt = await exhibitionFactory.createExhibitionConsumer("Test 1", "test 1 desc", "", 1, "1000000000000000000", "1000000000000000000", [0], 1);
         const consumerAddr = receipt.logs[0].args.consumer;
         const consumerAdded = await exhibitionFactory.getConsumerAddressAtIndex(0);
 
@@ -64,7 +64,7 @@ contract("ExhibitionFactory", (accounts) => {
         assert.equal(desc, "test 1 desc");
 
         //Deploying second consumer
-        const receipt2 = await exhibitionFactory.createExhibitionConsumer("Test 2", "test 2", "", 1, "1000000000000000000", "1000000000000000000", [0]);
+        const receipt2 = await exhibitionFactory.createExhibitionConsumer("Test 2", "test 2", "", 1, "1000000000000000000", "1000000000000000000", [0], 1);
         const consumerAddr2 = receipt2.logs[0].args.consumer;
         const consumerAdded2 = await exhibitionFactory.getConsumerAddressAtIndex(1);
         assert.equal(consumerAddr2, consumerAdded2);
@@ -85,7 +85,7 @@ contract("ExhibitionFactory", (accounts) => {
     */
     it("Should deploy two new exhibitions", async function() {
         /* Deploying first exhibition */
-        const receipt = await exhibitionFactory.createExhibition(true, accounts[1]);
+        const receipt = await exhibitionFactory.createExhibition(true, accounts[0], accounts[1], 1500, "", 1);
 
         const exhibitionAddr = receipt.logs[1].args.exhibition;
         const exhibitionAdded = await exhibitionFactory.getExhibitionAddressAtIndex(0);
@@ -106,7 +106,7 @@ contract("ExhibitionFactory", (accounts) => {
 
 
         /* Deploying second exhibition */
-        const receipt2 = await exhibitionFactory.createExhibition(false, accounts[2]);
+        const receipt2 = await exhibitionFactory.createExhibition(false, accounts[0], accounts[2], 1500, "", 1);
 
         const exhibitionAddr2 = receipt2.logs[1].args.exhibition;
         const exhibitionAdded2 = await exhibitionFactory.getExhibitionAddressAtIndex(1);
@@ -139,7 +139,7 @@ contract("ExhibitionFactory", (accounts) => {
     */
     it("Should deploy a consumer and change its name & description", async function() {
        //Deploying first consumer
-       const receipt = await exhibitionFactory.createExhibitionConsumer("Test 1", "test 1 desc", "", 1, "1000000000000000000", "1000000000000000000", [0]);
+       const receipt = await exhibitionFactory.createExhibitionConsumer("Test 1", "test 1 desc", "", 1, "1000000000000000000", "1000000000000000000", [0], 1);
 
        const consumerAddr = receipt.logs[0].args.consumer;
        const consumer = await ExhibitionConsumer.at(consumerAddr);
