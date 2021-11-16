@@ -104,4 +104,12 @@ contract ExhibitionFactory is WhitelistAdminRole {
         require(_index < exhibitions.length, "Invalid index");
         return address(exhibitions[_index]);
     }
+    
+    function getConsumersLength() external view returns(uint256){
+		return consumers.length;
+	}
+	
+	function getExhibitionsLength() external view returns(uint256){
+		return exhibitions.length;
+	}
 }

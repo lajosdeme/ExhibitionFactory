@@ -34,12 +34,12 @@ contract("ExhibitionFactory", (accounts) => {
     it("Should fail to create clone for non-whitelist admin", async function() {
         await expect(
             exhibitionFactory
-            .createExhibitionConsumer("Test 1", "test 1 desc", "", 1, "1000000000000000000", "1000000000000000000", [0], {from: accounts[1]}))
+            .createExhibitionConsumer("Test 1", "test 1 desc", "", 1, "1000000000000000000", "1000000000000000000", [0], 1, {from: accounts[1]}))
             .to.be.revertedWith("WhitelistAdminRole: caller does not have the WhitelistAdmin role");
 
         await expect(
             exhibitionFactory
-            .createExhibition(true, accounts[1], {from: accounts[1]}))
+            .createExhibition(true, accounts[0], accounts[1], 1500, "",1, {from: accounts[1]}))
             .to.be.revertedWith("WhitelistAdminRole: caller does not have the WhitelistAdmin role")
     })
 
