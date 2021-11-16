@@ -47,14 +47,20 @@ contract Exhibition is Initializable, Lockable, WhitelistAdminRole {
 
 	function initialize(
 		bool _isArtistExhibition,
-		address _unifty
+		address _unifty,
+		address _controller,
+		uint256 _uniftyFee,
+		string memory _exhibitionUri,
+		uint256 _version
 	) external initializer {
 		require(_unifty != address(0), "Unifty must be valid address.");
 		isArtistExhibition = _isArtistExhibition;
 		unifty = _unifty;
 		uniftyFeeAddress = _unifty;
-		uniftyFee = 1500;
-		version = 1;
+		controller = _controller;
+		uniftyFee = _uniftyFee;
+		exhibitionUri = _exhibitionUri;
+		version = _version;
 		Lockable.initialize();
 		initWhiteListAdmin();
 	}

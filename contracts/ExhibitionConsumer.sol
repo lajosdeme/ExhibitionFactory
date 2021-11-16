@@ -58,6 +58,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         uint256 _untRateStakers,
         uint256 _untRateExhibitionController,
         uint256[] memory _priceProviders,
+        uint256 _version,
         address _owner
     ) 
     public 
@@ -73,7 +74,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         allocationDuration = 300; // 86400*3;
         controllerVestingDuration = 300; //86400*30*6;
         optionExerciseDuration = 12000;//86400*30;
-        version = 1;
+        version = _version;
         // untrate: 1000000000000000000
         // untrateExhibitionController: 1000000000000000000
         

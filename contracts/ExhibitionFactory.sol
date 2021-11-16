@@ -41,12 +41,22 @@ contract ExhibitionFactory is WhitelistAdminRole {
         uint256 _graceTime,
         uint256 _untRateStakers,
         uint256 _untRateExhibitionController,
-        uint256[] memory _priceProviders
+        uint256[] memory _priceProviders,
+        uint256 _version
     ) external onlyWhitelistAdmin returns (address) {
 
         ExhibitionConsumer _consumer = ExhibitionConsumer(Clones.clone(masterConsumer));
 
-        _consumer.initialize(_name, _description, _peerUri, _graceTime, _untRateStakers, _untRateExhibitionController, _priceProviders, msg.sender);
+        _consumer.initialize(
+            _name, 
+            _description, 
+            _peerUri, 
+            _graceTime, 
+            _untRateStakers, 
+            _untRateExhibitionController, 
+            _priceProviders, 
+            _version, 
+            msg.sender);
         
         emit ConsumerCloneCreated(address(_consumer));
         consumers.push(_consumer);
@@ -65,16 +75,19 @@ contract ExhibitionFactory is WhitelistAdminRole {
     */
     function createExhibition(
         bool _isArtistExhibition,
-        address _controller
+        address _unifty,
+        address _controller,
+        uint256 _uniftyFee,
+        string memory _exhibitionUri,
+        uint256 _version
     ) external onlyWhitelistAdmin returns (address exhibition) {
 
         Exhibition _exhibition = Exhibition(Clones.clone(masterExhibition));
 
-        _exhibition.initialize(_isArtistExhibition, msg.sender);
+        _exhibition.initialize(_isArtistExhibition, _unifty, _controller, _uniftyFee, _exhibitionUri, _version);
 
         emit ExhibitionCloneCreated(address(_exhibition));
         
-        _exhibition.setController(_controller);
         _exhibition.addWhitelistAdmin(_controller);
 
         exhibitions.push(_exhibition);
@@ -83,10 +96,12 @@ contract ExhibitionFactory is WhitelistAdminRole {
     }
 
     function getConsumerAddressAtIndex(uint256 _index) external view returns (address) {
+        require(_index < consumers.length, "Invalid index");
         return address(consumers[_index]);
     }
 
     function getExhibitionAddressAtIndex(uint256 _index) external view returns (address) {
+        require(_index < exhibitions.length, "Invalid index");
         return address(exhibitions[_index]);
     }
 }
