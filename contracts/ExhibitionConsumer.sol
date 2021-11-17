@@ -70,7 +70,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         priceOracle = IUntPriceOracle(0x79da5be12AC0d9306579deeBc0A8c8dF2A335E9E);
         untAddress = 0xB11A9a955C4DaFaFB20a9bA7d57CDd9269D0E9ce;
         nifAddress = 0xb93370D549A4351FA52b3f99Eb5c252506e5a21e;
-        exhibitionDuration = 300; //86400*30;
+        exhibitionDuration = 600; //86400*30;
         allocationDuration = 300; // 86400*3;
         controllerVestingDuration = 300; //86400*30*6;
         optionExerciseDuration = 12000;//86400*30;
@@ -437,8 +437,8 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
 
         (,,,,uint256 amount) = gov.accountInfo(_account);
 
-        if(amount != accountPrevAmount[_account] && block.timestamp >= allocationEnd){
-            
+        if(block.timestamp >= allocationEnd){
+
             return (false, 0);
         }
 
@@ -495,12 +495,11 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
      * */
     function timeToUnfreeze(address _account) override external view returns(uint256){
 
-        (,,,,uint256 amount) = gov.accountInfo(_account);
-
-        if(amount != 0 && block.timestamp >= allocationEnd && exhibitionEnd > block.timestamp){
+        if(block.timestamp >= allocationEnd && exhibitionEnd > block.timestamp){
 
             return exhibitionEnd - block.timestamp;
         }
+
         return 0;
     }
 
@@ -511,13 +510,11 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
      * */
     function frozen(address _account) override public view returns(bool){
 
-        (,,,,uint256 amount) = gov.accountInfo(_account);
-
-        if(amount != 0 && block.timestamp >= allocationEnd && block.timestamp < exhibitionEnd){
+        if(block.timestamp >= allocationEnd && block.timestamp < exhibitionEnd){
 
             return true;
         }
-        
+
         return false;
     }
 
