@@ -437,7 +437,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
 
         (,,,,uint256 amount) = gov.accountInfo(_account);
 
-        if(block.timestamp >= allocationEnd){
+        if(amount > accountPrevAmount[_account] && block.timestamp >= allocationEnd){
 
             return (false, 0);
         }
@@ -495,7 +495,9 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
      * */
     function timeToUnfreeze(address _account) override external view returns(uint256){
 
-        if(block.timestamp >= allocationEnd && exhibitionEnd > block.timestamp){
+        (,,,,uint256 amount) = gov.accountInfo(_account);
+
+        if(amount != 0 && block.timestamp >= allocationEnd && exhibitionEnd > block.timestamp){
 
             return exhibitionEnd - block.timestamp;
         }
@@ -510,7 +512,9 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
      * */
     function frozen(address _account) override public view returns(bool){
 
-        if(block.timestamp >= allocationEnd && block.timestamp < exhibitionEnd){
+        (,,,,uint256 amount) = gov.accountInfo(_account);
+
+        if(amount != 0 && block.timestamp >= allocationEnd && block.timestamp < exhibitionEnd){
 
             return true;
         }
