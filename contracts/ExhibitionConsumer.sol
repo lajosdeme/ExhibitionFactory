@@ -269,25 +269,30 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
 
     function accumulatedUnt() public view returns(uint256){
 
-            uint256 _lastCollectionUpdate = lastCollectionUpdate;
+        uint256 _lastCollectionUpdate = lastCollectionUpdate;
 
-            if(_lastCollectionUpdate == 0 || _lastCollectionUpdate >= exhibitionEnd || block.timestamp < allocationEnd){
+        if(_lastCollectionUpdate == 0 || _lastCollectionUpdate >= exhibitionEnd || block.timestamp < allocationEnd){
 
-                return 0;
-            }
-
-            if(block.timestamp >= exhibitionEnd){
-
-                return ( exhibitionEnd - _lastCollectionUpdate ) * untRate;
-            }
-            
-            if(_lastCollectionUpdate < allocationEnd){
-                
-                _lastCollectionUpdate = allocationEnd;
-            }
-
-            return ( ( block.timestamp - _lastCollectionUpdate ) * untRate );
+            return 0;
         }
+
+        if(_lastCollectionUpdate < allocationEnd){
+
+            _lastCollectionUpdate = allocationEnd;
+        }
+
+        if(_lastCollectionUpdate > block.timestamp){
+
+            return 0;
+        }
+
+        if(block.timestamp >= exhibitionEnd){
+
+            return ( exhibitionEnd - _lastCollectionUpdate ) * untRate;
+        }
+
+        return ( ( block.timestamp - _lastCollectionUpdate ) * untRate );
+    }
 
     /**
      * Collect the current UNT based on real-time nif allocations
