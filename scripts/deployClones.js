@@ -18,14 +18,14 @@ async function main () {
     // await hre.run('compile');
     
     //local
-    let exhibitionConsumerMaster = '0xfE0a830087d0Ee98806Fb38C4dAadF7436e71Dc5'
-    let exhibitionMaster = '0x51baCc817D9CCb47F86E9B9464ef5aBD7c57cbB4'
-    let factoryAddress = '0x1ecAD8B5dBE21A8d36f2C8F6B68E724c381209d6'
+    // let exhibitionConsumerMaster = '0xfE0a830087d0Ee98806Fb38C4dAadF7436e71Dc5'
+    // let exhibitionMaster = '0x51baCc817D9CCb47F86E9B9464ef5aBD7c57cbB4'
+    // let factoryAddress = '0x1ecAD8B5dBE21A8d36f2C8F6B68E724c381209d6'
     
     //Rinkeby factory
-    // let exhibitionConsumerMaster = '0xC21CB2d4E705CC3b785223449a5D2c61590EfD45'
-    // let exhibitionMaster = '0xA2fb324c842cb4F40A83D0Dd28627217eCe4E16E'
-    // let factoryAddress = '0x60d447661ab5243E5DE99cd459D80f711c41b6A6'
+    let exhibitionConsumerMaster = '0xC21CB2d4E705CC3b785223449a5D2c61590EfD45'
+    let exhibitionMaster = '0xA2fb324c842cb4F40A83D0Dd28627217eCe4E16E'
+    let factoryAddress = '0x60d447661ab5243E5DE99cd459D80f711c41b6A6'
     
     let owner
     let addr1
@@ -36,6 +36,17 @@ async function main () {
     // controller = addr1
     
     let controller = '0x9852ea1E7bdFf6B4B43afA7b3d8a7d8C80dC4853'
+    let isArtist = true
+    
+    let exhibitionName = 'Name'
+    let description = 'Description 1'
+    let peerUri = '1'
+    let graceTime = 1
+    let untRateStakers = utils.parseUnits('2.833333333333330000')
+    let untRateExhibitionController = utils.parseUnits(
+        String(0.500000000000000000))
+    let priceProviders = [1]
+    let consumerVersion = 1
     
     console.log('owner', owner.address)
     console.log('controller', controller)
@@ -48,7 +59,7 @@ async function main () {
     let version = 1
     
     let estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibition(
-        true, owner.address,
+        isArtist, owner.address,
         controller, uniftyFee, 'no_uri', version)
     
     let estimatedGasPrice = await provider.getGasPrice()
@@ -61,7 +72,7 @@ async function main () {
         gasPrice: estimatedGasPrice,
     }
     
-    let exhibitionTx = await exhibitionFactory.createExhibition(true,
+    let exhibitionTx = await exhibitionFactory.createExhibition(isArtist,
         owner.address,
         controller, uniftyFee, 'no_uri', version, overrides)
     
@@ -80,16 +91,6 @@ async function main () {
         
         console.log('Exhibition Clone deployed to:', exhibitionAddress)
     }
-    
-    let exhibitionName = 'Name'
-    let description = 'Description 1'
-    let peerUri = '1'
-    let graceTime = 1
-    let untRateStakers = utils.parseUnits('2.833333333333330000')
-    let untRateExhibitionController = utils.parseUnits(
-        String(0.500000000000000000))
-    let priceProviders = [1]
-    let consumerVersion = 1
     
     estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibitionConsumer(
         exhibitionName,
