@@ -7,6 +7,8 @@
     "test": "tests"
   },
   "scripts": {
+    "deploy": "npx hardhat run scripts/deploy.js --network rinkeby",
+    "deployclone": "npx hardhat run scripts/deployClones.js --network rinkeby",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,15 +29,16 @@
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.4.7",
-    "hardhat": "^2.6.5",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.6.8",
     "hardhat-contract-sizer": "^2.1.1",
     "hardhat-gas-reporter": "^1.0.4",
-    "web3": "^1.6.0"
+    "web3": "^1.6.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.2",
+    "@openzeppelin/contracts": "^4.3.3",
+    "dotenv": "^10.0.0",
     "install": "^0.13.0",
-    "npm": "^8.0.0"
+    "npm": "^8.1.4"
   }
 }
