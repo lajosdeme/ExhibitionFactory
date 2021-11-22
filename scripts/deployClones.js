@@ -6,7 +6,7 @@
 
 const hre = require('hardhat')
 const {ethers, waffle} = require('hardhat')
-const provider = waffle.provider;
+const provider = waffle.provider
 const {utils} = ethers
 
 async function main () {
@@ -18,23 +18,27 @@ async function main () {
     // await hre.run('compile');
     
     //local
-    // let exhibitionConsumerMaster = "0xfE0a830087d0Ee98806Fb38C4dAadF7436e71Dc5"
-    // let exhibitionMaster = "0x51baCc817D9CCb47F86E9B9464ef5aBD7c57cbB4"
-    // let factoryAddress = "0x1ecAD8B5dBE21A8d36f2C8F6B68E724c381209d6"
-    
+    let exhibitionConsumerMaster = '0xfE0a830087d0Ee98806Fb38C4dAadF7436e71Dc5'
+    let exhibitionMaster = '0x51baCc817D9CCb47F86E9B9464ef5aBD7c57cbB4'
+    let factoryAddress = '0x1ecAD8B5dBE21A8d36f2C8F6B68E724c381209d6'
     
     //Rinkeby factory
-    let exhibitionConsumerMaster = '0xC21CB2d4E705CC3b785223449a5D2c61590EfD45'
-    let exhibitionMaster = '0xA2fb324c842cb4F40A83D0Dd28627217eCe4E16E'
-    let factoryAddress = '0x60d447661ab5243E5DE99cd459D80f711c41b6A6'
+    // let exhibitionConsumerMaster = '0xC21CB2d4E705CC3b785223449a5D2c61590EfD45'
+    // let exhibitionMaster = '0xA2fb324c842cb4F40A83D0Dd28627217eCe4E16E'
+    // let factoryAddress = '0x60d447661ab5243E5DE99cd459D80f711c41b6A6'
     
     let owner
-    let controller
+    let addr1
+    // let controller
     
-    [owner, controller, ...addrs] = await ethers.getSigners()
+    [owner, addr1, ...addrs] = await ethers.getSigners()
+    
+    // controller = addr1
+    
+    let controller = '0x9852ea1E7bdFf6B4B43afA7b3d8a7d8C80dC4853'
     
     console.log('owner', owner.address)
-    console.log('controller', controller.address)
+    console.log('controller', controller)
     
     const ExhibitionFactory = await ethers.getContractFactory(
         'ExhibitionFactory')
@@ -43,8 +47,9 @@ async function main () {
     let uniftyFee = 1500
     let version = 1
     
-    let estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibition(true, owner.address,
-        controller.address, uniftyFee, 'no_uri', version)
+    let estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibition(
+        true, owner.address,
+        controller, uniftyFee, 'no_uri', version)
     
     let estimatedGasPrice = await provider.getGasPrice()
     
@@ -53,22 +58,23 @@ async function main () {
     
     let overrides = {
         gasLimit: estimatedGasLimit,
-        gasPrice: estimatedGasPrice
-    };
+        gasPrice: estimatedGasPrice,
+    }
     
-    let exhibitionTx = await exhibitionFactory.createExhibition(true, owner.address,
-        controller.address, uniftyFee, 'no_uri', version, overrides)
+    let exhibitionTx = await exhibitionFactory.createExhibition(true,
+        owner.address,
+        controller, uniftyFee, 'no_uri', version, overrides)
     
-    
-    let exhibitionReceipt = await exhibitionTx.wait();
+    let exhibitionReceipt = await exhibitionTx.wait()
     console.log('exhibitionReceipt:', exhibitionReceipt.transactionHash)
     
     if (exhibitionReceipt.status) {
-    
-        console.log(`Transaction receipt : https://rinkeby.etherscan.io/tx/${exhibitionReceipt.transactionHash}`)
+        
+        console.log(
+            `Transaction receipt : https://rinkeby.etherscan.io/tx/${exhibitionReceipt.transactionHash}`)
         
         let exhibitionIndex = await exhibitionFactory.getExhibitionsLength() - 1
-    
+        
         let exhibitionAddress = await exhibitionFactory
             .getExhibitionAddressAtIndex(exhibitionIndex)
         
@@ -79,8 +85,9 @@ async function main () {
     let description = 'Description 1'
     let peerUri = '1'
     let graceTime = 1
-    let untRateStakers = utils.parseUnits("2.833333333333330000")
-    let untRateExhibitionController = utils.parseUnits(String(0.500000000000000000))
+    let untRateStakers = utils.parseUnits('2.833333333333330000')
+    let untRateExhibitionController = utils.parseUnits(
+        String(0.500000000000000000))
     let priceProviders = [1]
     let consumerVersion = 1
     
@@ -102,8 +109,8 @@ async function main () {
     
     overrides = {
         gasLimit: estimatedGasLimit,
-        gasPrice: estimatedGasPrice
-    };
+        gasPrice: estimatedGasPrice,
+    }
     
     let consumerTx = await exhibitionFactory.createExhibitionConsumer(
         exhibitionName,
@@ -114,23 +121,23 @@ async function main () {
         untRateExhibitionController,
         priceProviders,
         consumerVersion,
-        overrides
+        overrides,
     )
     
-    let consumerReceipt = await consumerTx.wait();
+    let consumerReceipt = await consumerTx.wait()
     console.log('consumerReceipt:', consumerReceipt.transactionHash)
     
     if (consumerReceipt.status) {
-    
+        
         console.log(
             `Consumer Transaction receipt : https://rinkeby.etherscan.io/tx/${consumerReceipt.transactionHash}`)
-    
+        
         let exhibitionConsumerIndex = await exhibitionFactory.getConsumersLength() -
             1
-    
+        
         let exhibitionConsumerAddress = await exhibitionFactory
             .getConsumerAddressAtIndex(exhibitionConsumerIndex)
-    
+        
         console.log('Consumer Clone deployed to:', exhibitionConsumerAddress)
     }
 }
