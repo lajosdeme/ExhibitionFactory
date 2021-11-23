@@ -18,9 +18,9 @@ async function main () {
     // await hre.run('compile');
     
     //local
-    // let exhibitionConsumerMaster = '0xfE0a830087d0Ee98806Fb38C4dAadF7436e71Dc5'
-    // let exhibitionMaster = '0x51baCc817D9CCb47F86E9B9464ef5aBD7c57cbB4'
-    // let factoryAddress = '0x1ecAD8B5dBE21A8d36f2C8F6B68E724c381209d6'
+    // let exhibitionConsumerMaster = '0x74C47fCa6e13922d8a539bdb8B6D212E35676fe7'
+    // let exhibitionMaster = '0x7683b68717FF30E23A545D91671E65A796e59B63'
+    // let factoryAddress = '0xCb4a79d2F2D9abBAC2e46673f8c54caF45C2A505'
     
     //Rinkeby factory
     let exhibitionConsumerMaster = '0xC21CB2d4E705CC3b785223449a5D2c61590EfD45'
@@ -58,9 +58,15 @@ async function main () {
     let uniftyFee = 1500
     let version = 1
     
-    let estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibition(
-        isArtist, owner.address,
-        controller, uniftyFee, 'no_uri', version)
+    let estimatedGasLimit
+    try {
+        estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibition(
+            isArtist, owner.address,
+            controller, uniftyFee, 'no_uri', version)
+    } catch (e) {
+        console.log('Error deploying exhibition: ', e)
+        return
+    }
     
     let estimatedGasPrice = await provider.getGasPrice()
     
@@ -79,6 +85,12 @@ async function main () {
     let exhibitionReceipt = await exhibitionTx.wait()
     console.log('exhibitionReceipt:', exhibitionReceipt.transactionHash)
     
+    let ethUsed = utils.formatUnits(
+        utils.parseUnits(exhibitionReceipt.gasUsed.toString(), 'gwei'),
+        'ether')
+    
+    console.log(`ethUsed: ${ethUsed} ETH`)
+    
     if (exhibitionReceipt.status) {
         
         console.log(
@@ -92,16 +104,23 @@ async function main () {
         console.log('Exhibition Clone deployed to:', exhibitionAddress)
     }
     
-    estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibitionConsumer(
-        exhibitionName,
-        description,
-        peerUri,
-        graceTime,
-        untRateStakers,
-        untRateExhibitionController,
-        priceProviders,
-        consumerVersion,
-    )
+    console.log(`=========================================`)
+    
+    try {
+        estimatedGasLimit = await exhibitionFactory.estimateGas.createExhibitionConsumer(
+            exhibitionName,
+            description,
+            peerUri,
+            graceTime,
+            untRateStakers,
+            untRateExhibitionController,
+            priceProviders,
+            consumerVersion,
+        )
+    } catch (e) {
+        console.log('Error deploying Consumer: ', e)
+        return
+    }
     
     estimatedGasPrice = await provider.getGasPrice()
     
@@ -127,6 +146,11 @@ async function main () {
     
     let consumerReceipt = await consumerTx.wait()
     console.log('consumerReceipt:', consumerReceipt.transactionHash)
+    ethUsed = utils.formatUnits(
+        utils.parseUnits(consumerReceipt.gasUsed.toString(), 'gwei'),
+        'ether')
+    
+    console.log(`ethUsed: ${ethUsed} ETH`)
     
     if (consumerReceipt.status) {
         
