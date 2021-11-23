@@ -35,10 +35,10 @@ async function main () {
     
     // controller = addr1
     
-    let controller = '0x9852ea1E7bdFf6B4B43afA7b3d8a7d8C80dC4853'
+    let controller = '0x47205dE3A08b5a739e2258fc5e8B4fF9071e3bd7'
     let isArtist = true
     
-    let exhibitionName = 'Name'
+    let exhibitionName = 'Logesh Factory test 1'
     let description = 'Description 1'
     let peerUri = '1'
     let graceTime = 1

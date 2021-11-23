@@ -12,3 +12,6 @@ artifacts
 
 #IntelliJ
 .idea
+
+#remix
+contracts/.deps
