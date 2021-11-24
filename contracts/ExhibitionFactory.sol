@@ -76,6 +76,7 @@ contract ExhibitionFactory is WhitelistAdminRole {
     function createExhibition(
         bool _isArtistExhibition,
         address _unifty,
+        address _uniftyFeeAddress,
         address _controller,
         uint256 _uniftyFee,
         string memory _exhibitionUri,
@@ -84,7 +85,7 @@ contract ExhibitionFactory is WhitelistAdminRole {
 
         Exhibition _exhibition = Exhibition(Clones.clone(masterExhibition));
 
-        _exhibition.initialize(_isArtistExhibition, _unifty, _controller, _uniftyFee, _exhibitionUri, _version);
+        _exhibition.initialize(_isArtistExhibition, _unifty, _uniftyFeeAddress, _controller, _uniftyFee, _exhibitionUri, _version);
 
         emit ExhibitionCloneCreated(address(_exhibition));
         _exhibition.addWhitelistAdmin(_unifty);

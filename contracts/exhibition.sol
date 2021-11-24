@@ -48,6 +48,7 @@ contract Exhibition is Initializable, Lockable, WhitelistAdminRole {
 	function initialize(
 		bool _isArtistExhibition,
 		address _unifty,
+		address _uniftyFeeAddress,
 		address _controller,
 		uint256 _uniftyFee,
 		string memory _exhibitionUri,
@@ -56,7 +57,7 @@ contract Exhibition is Initializable, Lockable, WhitelistAdminRole {
 		require(_unifty != address(0), "Unifty must be valid address.");
 		isArtistExhibition = _isArtistExhibition;
 		unifty = _unifty;
-		uniftyFeeAddress = _unifty;
+		uniftyFeeAddress = _uniftyFeeAddress;
 		controller = _controller;
 		uniftyFee = _uniftyFee;
 		exhibitionUri = _exhibitionUri;
