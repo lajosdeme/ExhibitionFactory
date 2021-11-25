@@ -51,6 +51,8 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
      * */
 
     function initialize(
+        address _governance,
+        address _untAddress,
         string memory _name,
         string memory _description,
         string memory _peerUri,
@@ -66,10 +68,10 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
     {
         require(_owner != address(0), "Owner must be valid address.");
         
-        gov = IUniftyGovernance(0xfEB5B2E41b0578013FE713F4D153ed96b9320b72);
+        gov = IUniftyGovernance(_governance);
         priceOracle = IUntPriceOracle(0x79da5be12AC0d9306579deeBc0A8c8dF2A335E9E);
-        untAddress = 0xB11A9a955C4DaFaFB20a9bA7d57CDd9269D0E9ce;
-        nifAddress = 0xb93370D549A4351FA52b3f99Eb5c252506e5a21e;
+        untAddress = _untAddress;
+        nifAddress = 0x7e291890B01E5181f7ecC98D79ffBe12Ad23df9e;
         exhibitionDuration = 600; //86400*30;
         allocationDuration = 300; // 86400*3;
         controllerVestingDuration = 300; //86400*30*6;

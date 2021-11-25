@@ -35,6 +35,8 @@ contract ExhibitionFactory is WhitelistAdminRole {
     * - Returns the address of the new consumer 
     */ 
     function createExhibitionConsumer(
+        address _governance,
+        address _untAddress,
         string memory _name,
         string memory _description,
         string memory _peerUri,
@@ -48,6 +50,8 @@ contract ExhibitionFactory is WhitelistAdminRole {
         ExhibitionConsumer _consumer = ExhibitionConsumer(Clones.clone(masterConsumer));
 
         _consumer.initialize(
+            _governance,
+            _untAddress,
             _name, 
             _description, 
             _peerUri, 
