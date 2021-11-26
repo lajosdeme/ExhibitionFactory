@@ -27,6 +27,16 @@ contract ExhibitionFactory is WhitelistAdminRole {
         masterExhibition = _masterExhibition;
     }
 
+    function setMasterConsumer(address _masterConsumer) external onlyWhitelistAdmin {
+        require(_masterConsumer != masterConsumer && _masterConsumer != address(0), "Master consumer has to be a valid address.");
+        masterConsumer = _masterConsumer;
+    }
+
+    function setMasterExhibition(address _masterExhibition) external onlyWhitelistAdmin {
+        require(_masterExhibition != masterExhibition && _masterExhibition != address(0), "Master exhibition has to be a valid address.");
+        masterExhibition = _masterExhibition;
+    }
+
     /** 
     * - Creates a clone of the master consumer
     * - Calls the initializer

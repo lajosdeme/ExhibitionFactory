@@ -173,9 +173,13 @@ contract Exhibition is Initializable, Lockable, WhitelistAdminRole {
 		}
 
 		uint256 fee = ( ( ( msg.value * 10**18 ) / 100 ) * uniftyFee ) / 10**20;
-		payable(uniftyFeeAddress).transfer(fee);
-		payable(controller).transfer(msg.value - fee);
 
+        (bool success, ) = payable(uniftyFeeAddress).call{value:fee}("");
+        require(success, "Fee transfer failed.");
+
+		(success, ) = payable(controller).call{value:msg.value - fee}("");
+        require(success, "Sale transfer failed.");
+		
 		emit Sold(_tokenAddress, _tokenId, cards[_tokenAddress][_tokenId].tokenType, msg.sender, cards[_tokenAddress][_tokenId].price, _amount);
 	}
 

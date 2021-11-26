@@ -69,13 +69,13 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         require(_owner != address(0), "Owner must be valid address.");
         
         gov = IUniftyGovernance(_governance);
-        priceOracle = IUntPriceOracle(0x79da5be12AC0d9306579deeBc0A8c8dF2A335E9E);
+        priceOracle = IUntPriceOracle(0x46C12B0C5EAAbCeDB70Dbe736fBbb3208426D691);
         untAddress = _untAddress;
         nifAddress = 0x7e291890B01E5181f7ecC98D79ffBe12Ad23df9e;
-        exhibitionDuration = 600; //86400*30;
-        allocationDuration = 300; // 86400*3;
-        controllerVestingDuration = 300; //86400*30*6;
-        optionExerciseDuration = 12000;//86400*30;
+        exhibitionDuration = 2851200;
+        allocationDuration = 259200;
+        controllerVestingDuration = 15768000;
+        optionExerciseDuration = 2592000;
         version = _version;
         // untrate: 1000000000000000000
         // untrateExhibitionController: 1000000000000000000
@@ -132,7 +132,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
     *
     * */
     function optionWithdraw(uint256 _amountUnt) override external payable lock returns(uint256){
-        
+
         require(!pausing || ( pausing && withdrawOnPause ), "optionWithdraw: pausing, sorry.");
         require(exhibition != address(0), "optionWithdraw: exhibition not set, access denied.");
         require(isOptionWithdraw(msg.sender), "optionWithdraw: not allowed to perform an option withdraw.");
@@ -140,6 +140,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
         require(_amountUnt > 0, "optionWithdraw: amount of unt must be larger than 0.");
 
         if(msg.sender == IExhibition(exhibition).controller()){
+
             uint256 endTime = block.timestamp;
 
             if(endTime > exhibitionEnd){
@@ -150,7 +151,7 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
             uint256 _earned = ( ( endTime - allocationEnd ) * untRateExhibitionController ) - paidToController;
             require(_earned >= _amountUnt, "optionWithdraw: requested more unt than available.");
             paidToController += _amountUnt;
-            
+
         } else {
 
             (IUniftyGovernanceConsumer con,address peer,,,) = gov.accountInfo(msg.sender);
@@ -161,15 +162,16 @@ contract ExhibitionConsumer is IUniftyGovernanceConsumer, Initializable, Lockabl
             require(_earned >= _amountUnt, "optionWithdraw: requested more unt than available.");
             accountDebt[msg.sender] += _amountUnt;
         }
-    
+
         uint256 paid = payout(msg.sender, _amountUnt);
 
         (,uint256 ethPrice,,) = priceOracle.getUntPrices();
         uint256 price = (_amountUnt * ethPrice * 10**8) / 10**18;
-        
+
         require(msg.value >= price, "optionWithdraw: insufficient eth sent.");
         
-        payable(IExhibition(exhibition).uniftyFeeAddress()).transfer(price);
+        (bool success, ) = payable(IExhibition(exhibition).uniftyFeeAddress()).call{value:price}("");
+        require(success, "optionWithdraw: eth transfer failed.");
 
         return paid;
     }
